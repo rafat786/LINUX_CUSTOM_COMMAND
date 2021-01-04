@@ -1,0 +1,81 @@
+#!/bin/bash
+
+if [ "$1" = cpu -a "$2" = getinfo ]
+then
+	lscpu
+fi
+
+if [ "$1" = memory -a "$2" = getinfo ]
+then
+        free
+fi
+
+if [ "$"1 = user -a "$2" = list ]
+then
+	if [ $1 = user -a $2 = list -a $3 = --sudo-only ]
+	then
+		grep '^sudo:.*$' /etc/group | cut -d: -f4
+	else
+
+		awk -F':' '{ print $1}' /etc/passwd
+	fi
+fi
+
+
+
+if [ "$1" = user -a "$2" = create ]
+then
+	sudo useradd $3
+fi
+
+if [ "$1" = file -a "$2" = getinfo ]
+then
+        if [ $3 = --size -o $3 = -s ]
+        then
+                echo -n "Size:  ";    stat --print="%s" $4
+        elif [ $3 = --permissions -o $3 = -p ]
+        then
+                echo -n "Acess:  ";   ls -l $4 | awk '{print $1}'
+        elif [ $3 = --owner -o $3 = o ]
+        then
+                echo -n "Owner:  ";   stat -c '%U' $4
+        elif [ $3 = --last-modified -o $3 = m ]
+        then
+                echo -n "Modify: ";  stat -c '%y' $4
+        else
+        echo "File: $3"
+        echo -n "Acess:  ";   ls -l $3 | awk '{print $1}'
+        echo -n "Size:  ";    stat --print="%s" $3
+        echo -n "Owner:  ";   stat -c '%U' $3
+        echo -n  "Modify:  ";  stat -c '%y' $3
+       fi
+fi
+
+
+if [ "$1" = --help -a "$2" == "" ]
+then
+	echo "This is a custom command  from which we get the information 
+about cpu ,memory.will create new user,print all regular user and also the user with sudo permission.Print the information about a file regarding the size of file,owner of file,file permissions and the date when last modified.
+
+Manadatory arguments ,both long and short.
+-s   --size          print size of file
+-p   --permissions   print the permisions
+o    --owner         print the name of owner
+m   --last modified   print the date when last modified
+ 
+internsct1 memory getinfo
+## Gives similar output as free command ##
+internsct1 cpu getinfo
+## Gives similar output as lscpu ##
+internsct1  user create <username>
+craete new user who have access on home directory
+internsct1 user list
+## it list down all the user ##"
+fi
+
+if [ "$1" == --version -a "$2" == "" ]
+then
+        echo "v0.1.0";
+fi
+
+
